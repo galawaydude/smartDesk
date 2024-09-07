@@ -192,3 +192,24 @@ def document_chat(request):
 
 def document_chat_page(request):
     return render(request, 'accounts/document_chat.html')
+
+from .chatbot import project_management_chat
+
+@csrf_exempt
+def project_management_chatbot_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_input = data.get('message', '')
+            if not user_input:
+                return JsonResponse({'error': 'No message provided'}, status=400)
+            response = project_management_chat(user_input)
+            return JsonResponse({'response': response})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def project_management_chatbot_page(request):
+    return render(request, 'accounts/project_management_chatbot.html')

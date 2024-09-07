@@ -16,6 +16,8 @@ urlpatterns = [
     path('upload-document/', views.upload_document, name='upload_document'),
 path('document-chat/', views.document_chat, name='document_chat'),
 path('document-chat-page/', views.document_chat_page, name='document_chat_page'),
+path('project-management-chatbot/', views.project_management_chatbot_view, name='project_management_chatbot'),
+path('project-management-chatbot-page/', views.project_management_chatbot_page, name='project_management_chatbot_page'),
 ]
 
 if settings.DEBUG:

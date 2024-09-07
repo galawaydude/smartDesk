@@ -3,7 +3,7 @@
 {% block content %}
 <div id="chatbot-container">
     <div id="chat-messages"></div>
-    <input type="text" id="user-input" placeholder="Type your message...">
+    <input type="text" id="user-input" placeholder="Ask about projects, events, news, or employees...">
     <button onclick="sendMessage()">Send</button>
 </div>
 
@@ -16,7 +16,7 @@ function sendMessage() {
     
     var startTime = new Date().getTime();
     
-    fetch('/hr-chatbot/', {
+    fetch('/project-management-chatbot/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ function sendMessage() {
     .then(data => {
         var endTime = new Date().getTime();
         var delay = (endTime - startTime) / 1000;
-        chatMessages.innerHTML += '<p><strong>HR Bot:</strong> ' + data.response + '</p>';
+        chatMessages.innerHTML += '<p><strong>PM Bot:</strong> ' + data.response + '</p>';
         chatMessages.innerHTML += '<p><em>Response time: ' + delay.toFixed(2) + ' seconds</em></p>';
     })
     .catch(error => console.error('Error:', error));
