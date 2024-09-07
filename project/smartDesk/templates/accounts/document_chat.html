@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="document-chat-container">
+    <div>
+        <input type="file" id="document-upload" accept=".pdf,.docx">
+        <button onclick="uploadDocument()">Upload Document</button>
+    </div>
+    <div id="chat-messages"></div>
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+function uploadDocument() {
+    var fileInput = document.getElementById('document-upload');
+    var file = fileInput.files[0];
+    var formData = new FormData();
+    formData.append('document', file);
+
+    fetch('/upload-document/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function sendMessage() {
+    var userInput = document.getElementById('user-input').value;
+    var chatMessages = document.getElementById('chat-messages');
+    
+    chatMessages.innerHTML += '<p><strong>You:</strong> ' + userInput + '</p>';
+    
+    fetch('/document-chat/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({message: userInput})
+    })
+    .then(response => response.json())
+    .then(data => {
+        chatMessages.innerHTML += '<p><strong>Bot:</strong> ' + data.response + '</p>';
+    })
+    .catch(error => console.error('Error:', error));
+    
+    document.getElementById('user-input').value = '';
+}
+</script>
+{% endblock %}

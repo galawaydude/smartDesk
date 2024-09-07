@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Smart Desk{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <div id="verificationForm" style="display: none;">
+        <h3>Enter Verification Code</h3>
+        <input type="text" id="verificationCode" placeholder="Enter code">
+        <button onclick="verifyLogin()">Verify</button>
+    </div>
+    <div id="message"></div>
+</div>
+{% endblock %}
