@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 from django.core.files.storage import default_storage
 from .document_chatbot import process_document, chat_with_document, GoogleGenerativeAIEmbeddings
 from langchain.vectorstores import FAISS
+from django.core.mail import send_mail
 
 load_dotenv()
 
@@ -66,11 +68,11 @@ def verify_registration(request):
         except (User.DoesNotExist, VerificationCode.DoesNotExist):
             return JsonResponse({'error': 'Invalid verification code'}, status=400)
     
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
 @csrf_protect
 def login_view(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return render(request, 'accounts/login.html')
+    elif request.method == 'POST':
         data = json.loads(request.body)
         email = data.get('email')
         password = data.get('password')
@@ -79,19 +81,28 @@ def login_view(request):
             user = User.objects.get(email=email)
             if user.check_password(password):
                 if user.is_active:
-                    code = VerificationCode.generate_code()
+                    # Generate and save verification code
+                    code = str(random.randint(100000, 999999))
                     VerificationCode.objects.create(user=user, code=code)
-                    send_verification_email.delay(email, code)
-                    return JsonResponse({'message': 'Verification code sent', 'needsVerification': True}, status=200)
+                    
+                    # Send verification code via email
+                    send_mail(
+                        'Login Verification Code',
+                        f'Your verification code is: {code}',
+                        'noreply@smartdesk.com',
+                        [email],
+                        fail_silently=False,
+                    )
+                    
+                    return JsonResponse({'needsVerification': True, 'message': 'Please check your email for the verification code.'})
                 else:
-                    return JsonResponse({'error': 'Account not verified'}, status=400)
+                    return JsonResponse({'error': 'Account is not active. Please verify your email.'}, status=400)
             else:
-                return JsonResponse({'error': 'Invalid credentials'}, status=400)
+                return JsonResponse({'error': 'Invalid password'}, status=400)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=400)
+            return JsonResponse({'error': 'User with this email does not exist'}, status=400)
     
-    return render(request, 'accounts/login.html')
-
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 @csrf_protect
 def verify_login(request):
     if request.method == 'POST':
@@ -104,18 +115,15 @@ def verify_login(request):
             verification = VerificationCode.objects.get(user=user, code=code)
             verification.delete()
             login(request, user)
-            return JsonResponse({'message': 'Login successful'})
+            return JsonResponse({'message': 'Login successful', 'redirect': '/home/'})
         except (User.DoesNotExist, VerificationCode.DoesNotExist):
             return JsonResponse({'error': 'Invalid verification code'}, status=400)
     
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-def login_success(request):
-    return render(request, 'accounts/login_success.html')
-
 def hr_chatbot(user_input):
-    hr_context = ("Answer this as an HR of a big SaaS company, give replies specific to your company, not generic. "
-                  "You should know everything about HR policy and rules. Give answers in paragraphs, not points.\n\n, reply with as short answer as possible, but it should make sense")
+    hr_context = ("You Are a chat bot for GAIL, which is india's oil firm. "
+                  "You should know everything about HR policy and rules, AND IT support, answe the given queries, like an assistant would. Give answers in paragraphs, not points.\n\n, reply with as short answer as possible, but it should make sense, and try to be as specific to GAIL as possible, do not be generic")
     
     max_retries = 3
     for attempt in range(max_retries):
@@ -213,3 +221,37 @@ def project_management_chatbot_view(request):
 
 def project_management_chatbot_page(request):
     return render(request, 'accounts/project_management_chatbot.html')
+
+
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
+@login_required
+def get_username(request):
+    return JsonResponse({'username': request.user.username})
+
+@login_required
+def home(request):
+    return render(request, 'accounts/home.html')
+
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def home(request):
+    return render(request, 'accounts/home.html')
+
+def index(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:
+        return redirect('login')
+
+
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')

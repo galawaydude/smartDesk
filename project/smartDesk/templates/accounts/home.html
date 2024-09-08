@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Smart Desk</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body, html {
+            background-color: #111827;
+            color: #E5E7EB;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .greeting {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4F46E5, #7C3AED, #4F46E5, #b65c83, #d61de3, #e70759);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientFlow 5s ease infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #F3F4F6;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #9CA3AF;
+        }
+
+        .cards-con {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .feat-cards {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #E5E7EB;
+            backdrop-filter: blur(10px);
+        }
+
+        .feat-cards:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .feat-cards i {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #6D28D9;
+        }
+
+        .feat-cards h5 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feat-cards p {
+            font-size: 1rem;
+            text-align: center;
+            color: #9CA3AF;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-animation {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .card-animation:nth-child(1) { animation-delay: 0.2s; }
+        .card-animation:nth-child(2) { animation-delay: 0.4s; }
+        .card-animation:nth-child(3) { animation-delay: 0.6s; }
+        #logout-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.logout-btn {
+    background-color: transparent;
+    border: 1px solid #E5E7EB;
+    color: #E5E7EB;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+    </style>
+</head>
+<body>
+    <body>
+        <div id="logout-container">
+            <a href="/logout/" class="logout-btn">Logout</a>
+        </div>
+    
+    <div class="container">
+        <div class="greeting">Hello, <span id="username"></span></div>
+        <h1>Welcome to SmartDesk</h1>
+        <p class="subtitle">Your AI-powered workplace assistant suite</p>
+
+        <div class="cards-con">
+            <a href="/hr-chatbot-page/" class="feat-cards card-animation">
+                <i class="fas fa-users"></i>
+                <h5>HR Assistant</h5>
+                <p>Get help with HR policies and workplace queries</p>
+            </a>
+            <a href="/document-chat-page/" class="feat-cards card-animation">
+                <i class="fas fa-file-alt"></i>
+                <h5>Document Chat</h5>
+                <p>Analyze and chat with your documents effortlessly</p>
+            </a>
+            <a href="/project-management-chatbot-page/" class="feat-cards card-animation">
+                <i class="fas fa-tasks"></i>
+                <h5>Project Management</h5>
+                <p>Streamline your project workflows and tasks</p>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        fetch('/get-username/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('username').textContent = data.username;
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>

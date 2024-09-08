@@ -1,39 +1,226 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Chatbot | Smart Desk</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-{% block content %}
-<div id="chatbot-container">
-    <div id="chat-messages"></div>
-    <input type="text" id="user-input" placeholder="Type your message...">
-    <button onclick="sendMessage()">Send</button>
-</div>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            color: #E0E0E0;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 25%, #222222 50%, #1a1a1a 75%, #0f0f0f 100%);
+            background-attachment: fixed;
+            background-size: 400% 400%;
+        }
 
-<script>
-function sendMessage() {
-    var userInput = document.getElementById('user-input').value;
-    var chatMessages = document.getElementById('chat-messages');
-    
-    chatMessages.innerHTML += '<p><strong>You:</strong> ' + userInput + '</p>';
-    
-    var startTime = new Date().getTime();
-    
-    fetch('/hr-chatbot/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({message: userInput})
-    })
-    .then(response => response.json())
-    .then(data => {
-        var endTime = new Date().getTime();
-        var delay = (endTime - startTime) / 1000;
-        chatMessages.innerHTML += '<p><strong>HR Bot:</strong> ' + data.response + '</p>';
-        chatMessages.innerHTML += '<p><em>Response time: ' + delay.toFixed(2) + ' seconds</em></p>';
-    })
-    .catch(error => console.error('Error:', error));
-    
-    document.getElementById('user-input').value = '';
-}
-</script>
-{% endblock %}
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 80px);
+        }
+
+        h1 {
+            font-size: 50px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(to right, #ffffff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .chat-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            height: calc(100vh - 300px);
+            padding-right: 10px;
+        }
+
+        .chat-area::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: transparent;
+            height: 1px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background-color: #4A4A4A;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb:hover {
+            background-color: #5A5A5A;
+        }
+
+        .chat-input-container {
+            position: relative;
+        }
+
+        .chat-input {
+            display: flex;
+            align-items: center;
+            background-color: #2A2A2A;
+            border-radius: 24px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            border: none;
+            font-size: 16px;
+            padding: 8px;
+            background: transparent;
+            color: #E0E0E0;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+        }
+
+        .chat-input button {
+            background-color: #4A4A4A;
+            color: #E0E0E0;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-input button:hover {
+            background-color: #5A5A5A;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .bot-message {
+            text-align: left;
+        }
+
+        .message-content {
+            display: inline-block;
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+        }
+
+        .user-message .message-content {
+            background-color: #3A3A3A;
+        }
+
+        .bot-message .message-content {
+            background-color: #2A2A2A;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .response-time {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HR Chatbot</h1>
+        <div class="chat-area" id="chat-messages"></div>
+        <div class="chat-input-container">
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function sendMessage() {
+        var userInput = document.getElementById('user-input').value;
+        var chatMessages = document.getElementById('chat-messages');
+        
+        if (!userInput.trim()) return;
+
+        addMessage(userInput, 'user-message');
+        document.getElementById('user-input').value = '';
+        
+        var startTime = new Date().getTime();
+        
+        fetch('/hr-chatbot/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({message: userInput})
+        })
+        .then(response => response.json())
+        .then(data => {
+            var endTime = new Date().getTime();
+            var delay = (endTime - startTime) / 1000;
+            addMessage(data.response, 'bot-message', delay);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            addMessage('An error occurred. Please try again.', 'bot-message');
+        });
+    }
+
+    function addMessage(content, className, delay = null) {
+        var chatMessages = document.getElementById('chat-messages');
+        var messageDiv = document.createElement('div');
+        messageDiv.className = `message ${className}`;
+        messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+        if (delay !== null) {
+            messageDiv.innerHTML += `<div class="response-time">Response time: ${delay.toFixed(2)} seconds</div>`;
+        }
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.getElementById('user-input').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+    </script>
+</body>
+</html>

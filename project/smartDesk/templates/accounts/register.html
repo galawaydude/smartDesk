@@ -1,34 +1,212 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create an account | Smart Desk</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-{% block title %}Register - Smart Desk{% endblock %}
-
-{% block content %}
-<div class="form-container">
-    <h2>Register</h2>
-    <form id="registerForm">
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000000;
+            color: #ffffff;
+        }
+        .register-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        .register-header {
+            text-align: right;
+            margin-bottom: 40px;
+        }
+        .register-header a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #000000;
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: #ffffff;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .terms {
+            font-size: 12px;
+            color: #a0a0a0;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .terms a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .success {
+            background-color: #28a745;
+            color: #ffffff;
+        }
+        .error {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <a href="/login/">Login</a>
         </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div class="form-group">
-            <label for="confirm_password">Confirm Password:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
-        </div>
-        <button type="submit">Register</button>
-    </form>
-    <div id="verificationForm" style="display: none;">
-        <h3>Enter Verification Code</h3>
-        <input type="text" id="verificationCode" placeholder="Enter code">
-        <button onclick="verifyRegistration()">Verify</button>
+        <h1>Create an account</h1>
+        <p>Enter your details below to create your account</p>
+        <form id="registerForm">
+            <input type="text" class="input-field" id="username" placeholder="Username" required>
+            <input type="email" class="input-field" id="email" placeholder="Email address" required>
+            <input type="password" class="input-field" id="password" placeholder="Password" required>
+            <input type="password" class="input-field" id="confirm_password" placeholder="Confirm Password" required>
+            <button type="submit" class="submit-btn">Create Account</button>
+        </form>
+        <form id="verificationForm" style="display: none;">
+            <input type="text" class="input-field" id="verificationCode" placeholder="Verification Code" required>
+            <button type="submit" class="submit-btn">Verify</button>
+        </form>
+        <div id="message" class="message"></div>
     </div>
-    <div id="message"></div>
-</div>
-{% endblock %}
+    <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.getElementById('registerForm');
+        const verificationForm = document.getElementById('verificationForm');
+
+        registerForm.addEventListener('submit', handleRegister);
+        verificationForm.addEventListener('submit', verifyRegistration);
+    });
+
+    async function handleRegister(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirm_password = document.getElementById('confirm_password').value;
+
+        if (password !== confirm_password) {
+            showMessage('Passwords do not match.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ username, email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('verificationForm').style.display = 'block';
+                showMessage(data.message, 'success');
+            } else {
+                showMessage(data.error, 'error');
+            }
+        } catch (error) {
+            showMessage('An error occurred. Please try again.', 'error');
+        }
+    }
+
+    async function verifyRegistration(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const code = document.getElementById('verificationCode').value;
+
+        try {
+            const response = await fetch('/verify-registration/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ email, code }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = '/login/'; // Redirect to login page after successful registration
+                }, 2000);
+            } else {
+                showMessage(data.error, 'error');
+            }
+        } catch (error) {
+            showMessage('An error occurred. Please try again.', 'error');
+        }
+    }
+
+    function showMessage(message, type) {
+        const messageElement = document.getElementById('message');
+        messageElement.textContent = message;
+        messageElement.className = `message ${type}`;
+    }
+    </script>
+</body>
+</html>

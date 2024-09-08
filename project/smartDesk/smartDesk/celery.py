@@ -6,3 +6,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smartDesk.settings')
 app = Celery('smartDesk')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
+
+# celery -A smartDesk worker -l info
