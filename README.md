@@ -1,4 +1,4 @@
-### This was mae for a hackathon
+### This was made for a hackathon
 # SmartDesk Assistant
 
 We've built SmartDesk to be the helpful colleague that never sleeps. It's like having an HR specialist, document researcher, and project analyst rolled into one AI-powered tool - designed specifically for modern workplace challenges.
