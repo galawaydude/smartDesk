@@ -1,4 +1,24 @@
-# SmartDesk 
-### This app was made for a hackathon, The problem statement for which is _Develop a chatbot using deep learning and natural language processing techniques to accurately understand and respond to queries from employees of a large public sector organization. The chatbot should be capable of handling diverse questions related to HR policies, IT support, company events, and other organizational matters. (Hackathon students/teams to use publicly available sample information for HR Policy, IT Support, etc. available on internet.) Develop document processing capabilities for the chatbot to analyse and extract information from documents uploaded by employees. This includes summarizing a document or extracting text (keyword information) from documents relevant to organizational needs. (Hackathon students/teams can use any 8 to 10 page document for demonstration). Ensure the chatbot architecture is scalable to handle minimum 5 users parallelly. This includes optimizing response time (Response Time should not exceed 5 seconds for any query unless there is a technical issue like connectivity, etc.) Enable 2FA (2 Factor Authentication – email id type) in the chatbot for enhancing the security level of the chatbot. Chatbot should filter bad language as per system-maintained dictionary. Youtube Link/Video Link (3 Minute video explaining the Problem Statement): https://youtu.be/Q3pP7mRk5Qk NOTE: GAIL (INDIA) LTD will not provide any hardware, software, license, data or any other resource to SIH hackathon Teams. The teams should use free and/or open-source resources, as applicable, for the entire project_
-### I made three chatbots, using different APIs, the HR, and the General Q/A was made using an Open AI model which was hosted on Azure. For the document Chat, I used Gemini Pro's free API.
-### Demo
+### This was mae for a hackathon
+# SmartDesk Assistant
+
+We've built SmartDesk to be the helpful colleague that never sleeps. It's like having an HR specialist, document researcher, and project analyst rolled into one AI-powered tool - designed specifically for modern workplace challenges.
+
+### What Problem Does This Solve?
+Ever wasted time digging through HR policies? Struggled to find that one clause in a 50-page PDF? Needed quick project insights but waited hours for reports? SmartDesk cuts through these frustrations by putting AI to work where it matters most in your daily workflow.
+
+### How It Helps
+- **HR Answers, Not Search Results**  
+Get plain-English explanations of company policies without digging through manuals
+
+- **Document Detective**  
+Ask natural questions about PDF content and get precise answers with source references
+
+- **Project Insights On Demand**  
+Generate data snapshots using simple English requests instead of SQL queries
+
+### Tech Used
+- **Django** 
+- **Azure OpenAI** 
+- **Celery**
+
+*Note: Requires your own AI API keys - we don't peek at your data.*
