@@ -2,8 +2,8 @@ import os
 import time
 from openai import AzureOpenAI
 
-os.environ["AZURE_OPENAI_ENDPOINT"] = "https://syncity.openai.azure.com/"
-os.environ["AZURE_OPENAI_API_KEY"] = "397afaea55ce42d39d200f3618076f2c"
+os.environ["AZURE_OPENAI_ENDPOINT"] = ""
+os.environ["AZURE_OPENAI_API_KEY"] = ""
 
 endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
 api_key = os.getenv("AZURE_OPENAI_API_KEY")
