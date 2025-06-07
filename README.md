@@ -13,12 +13,12 @@ Get plain-English explanations of company policies without digging through manua
 - **Document Detective**  
 Ask natural questions about PDF content and get precise answers with source references
 
-- **Project Insights On Demand**  
-Generate data snapshots using simple English requests instead of SQL queries
+- **Query Databases**  
+Query Information regarding the company projects, and departments directly from the database using natural language
 
 ### Tech Used
 - **Django** 
 - **Azure OpenAI** 
 - **Celery**
 
-*Note: Requires your own AI API keys - we don't peek at your data.*
+*Note: Requires your own AI API keys *
