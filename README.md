@@ -23,4 +23,4 @@ Query Information regarding the company projects, and departments directly from 
 - **LangChain**
 - **FAISS**
 
-*Note: Requires your own AI API keys *
+*Put in your own keys, its configured to work with azure open ai, cause that was free*
