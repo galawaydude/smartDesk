@@ -20,5 +20,7 @@ Query Information regarding the company projects, and departments directly from 
 - **Django** 
 - **Azure OpenAI** 
 - **Celery**
+- **LangChain**
+- **FAISS**
 
 *Note: Requires your own AI API keys *
